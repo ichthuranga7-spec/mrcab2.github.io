@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MR CAB – Safe and Comfortable Ride</title>
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --yellow: #FFD700;
+      --yellow-dark: #e6c200;
+      --yellow-light: #fff8cc;
+      --black: #1a1a1a;
+      --dark: #222;
+      --gray: #555;
+      --light-gray: #f4f4f4;
+      --white: #fff;
+      --green: #25D366;
+      --green-dark: #128C7E;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.10);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.15);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; color: var(--black); background: var(--white); }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    input, select, textarea, button { font-family: inherit; }
+    section { padding: 64px 20px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    h2.section-title {
+      font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 10px;
+      color: var(--black);
+    }
+    h2.section-title span { color: var(--yellow-dark); }
+    .section-sub { text-align: center; color: var(--gray); margin-bottom: 40px; font-size: 1rem; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px; border-radius: 50px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; border: none; transition: all 0.2s;
+    }
+    .btn-yellow { background: var(--yellow); color: var(--black); }
+    .btn-yellow:hover { background: var(--yellow-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,215,0,0.5); }
+    .btn-wa { background: var(--green); color: #fff; font-size: 1.05rem; }
+    .btn-wa:hover { background: var(--green-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,0.4); }
+    .btn-black { background: var(--black); color: var(--yellow); }
+    .btn-black:hover { background: #333; transform: translateY(-2px); }
+ 
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: var(--yellow);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px; height: 64px;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 12px; }
+    .nav-logo img { height: 46px; width: 46px; border-radius: 50%; object-fit: cover; border: 2px solid var(--black); }
+    .nav-logo-text { font-size: 1.3rem; font-weight: 900; color: var(--black); letter-spacing: 1px; }
+    .nav-links { display: flex; gap: 22px; align-items: center; }
+    .nav-links a { font-weight: 600; font-size: 0.92rem; color: var(--black); transition: opacity 0.15s; padding: 4px 0; border-bottom: 2px solid transparent; }
+    .nav-links a:hover { border-bottom-color: var(--black); }
+    .nav-wa { background: var(--green); color: #fff !important; padding: 7px 18px; border-radius: 50px; border-bottom: none !important; }
+    .nav-wa:hover { background: var(--green-dark) !important; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { display: block; width: 26px; height: 3px; background: var(--black); border-radius: 2px; transition: 0.3s; }
+    @media(max-width:768px){
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--yellow); padding: 20px 28px; gap: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+      .nav-links.open { display: flex; }
+      .hamburger { display: flex; }
+    }
+ 
+    /* ===== HERO ===== */
+    #hero {
+      min-height: 100vh; background: var(--yellow);
+      display: flex; align-items: center; justify-content: center;
+      padding-top: 80px; position: relative; overflow: hidden;
+    }
+    .hero-content { display: flex; align-items: center; justify-content: space-between; gap: 40px; max-width: 1100px; width: 100%; }
+    .hero-left { flex: 1; }
+    .hero-logo { display: flex; align-items: center; gap: 18px; margin-bottom: 30px; }
+    .hero-logo img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--black); box-shadow: var(--shadow-lg); }
+    .hero-logo-info h1 { font-size: 2.6rem; font-weight: 900; color: var(--black); line-height: 1.1; }
+    .hero-logo-info p { font-size: 0.95rem; font-weight: 600; color: #333; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+    .hero-headline { font-size: 3rem; font-weight: 900; color: var(--black); line-height: 1.2; margin-bottom: 16px; }
+    .hero-headline span { color: #333; font-size: 2rem; display: block; font-weight: 700; }
+    .hero-desc { font-size: 1.1rem; color: #333; margin-bottom: 30px; max-width: 480px; line-height: 1.7; }
+    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+    .hero-right { flex: 1; display: flex; justify-content: center; align-items: center; }
+    .hero-taxi-wrap {
+      width: 380px; height: 380px; background: rgba(0,0,0,0.07);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      position: relative; animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+    .hero-taxi-svg { font-size: 200px; line-height: 1; user-select: none; }
+    .hero-badge {
+      position: absolute; bottom: 30px; right: -10px;
+      background: var(--black); color: var(--yellow); padding: 10px 18px;
+      border-radius: 50px; font-weight: 700; font-size: 0.9rem;
+      box-shadow: var(--shadow);
+    }
+    @media(max-width:900px){
+      .hero-content { flex-direction: column; text-align: center; }
+      .hero-logo { justify-content: center; }
+      .hero-desc { margin: 0 auto 30px; }
+      .hero-btns { justify-content: center; }
+      .hero-taxi-wrap { width: 260px; height: 260px; }
+      .hero-taxi-svg { font-size: 130px; }
+      .hero-headline { font-size: 2.2rem; }
+    }
+ 
+    /* ===== VEHICLES ===== */
+    #vehicles { background: var(--white); }
+    .vehicles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+    @media(max-width:900px){ .vehicles-grid { grid-template-columns: 1fr; } }
+    .vehicle-card {
+      background: var(--white); border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden;
+      border: 2px solid transparent; transition: border 0.2s, transform 0.2s;
+    }
+    .vehicle-card:hover { border-color: var(--yellow); transform: translateY(-4px); }
+    .vehicle-card-header {
+      background: var(--yellow); padding: 18px 22px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .vehicle-card-header .icon { font-size: 2rem; }
+    .vehicle-card-header h3 { font-size: 1.25rem; font-weight: 800; color: var(--black); }
+    .vehicle-table { width: 100%; border-collapse: collapse; }
+    .vehicle-table th {
+      background: var(--black); color: var(--yellow);
+      padding: 10px 14px; font-size: 0.82rem; text-align: left; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .vehicle-table td { padding: 10px 14px; font-size: 0.93rem; border-bottom: 1px solid #eee; }
+    .vehicle-table tr:last-child td { border-bottom: none; }
+    .vehicle-table tr:hover td { background: var(--yellow-light); }
+    .night-badge { font-size: 0.8rem; background: #f0f0f0; padding: 2px 8px; border-radius: 50px; color: var(--gray); }
+ 
+    /* ===== BOOKING FORM ===== */
+    #booking { background: var(--light-gray); }
+    .booking-card {
+      background: var(--white); border-radius: var(--radius);
+      box-shadow: var(--shadow-lg); padding: 40px; max-width: 780px; margin: 0 auto;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+    @media(max-width:600px){ .form-row { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label { font-weight: 600; font-size: 0.9rem; color: var(--dark); }
+    .form-control {
+      padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 8px;
+      font-size: 0.97rem; transition: border 0.2s; background: #fafafa;
+    }
+    .form-control:focus { outline: none; border-color: var(--yellow); background: #fff; }
+    .form-control::placeholder { color: #aaa; }
+    select.form-control { cursor: pointer; }
+    textarea.form-control { resize: vertical; min-height: 90px; }
+ 
+    .stops-wrap { display: flex; flex-direction: column; gap: 10px; }
+    .stop-item { display: flex; gap: 10px; align-items: center; }
+    .stop-item input { flex: 1; }
+    .btn-remove-stop {
+      background: #ff4d4d; color: #fff; border: none; border-radius: 8px;
+      padding: 10px 14px; cursor: pointer; font-size: 0.9rem; flex-shrink: 0; transition: background 0.2s;
+    }
+    .btn-remove-stop:hover { background: #c0392b; }
+    .btn-add-stop {
+      background: var(--yellow); border: 2px dashed var(--black); color: var(--black);
+      padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.9rem;
+      transition: background 0.2s; margin-top: 4px; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-add-stop:hover { background: var(--yellow-dark); }
+ 
+    /* Advance Payment */
+    .advance-box {
+      background: var(--yellow-light); border: 2px solid var(--yellow);
+      border-radius: 10px; padding: 18px 22px; margin-bottom: 18px;
+    }
+    .advance-box h4 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: var(--black); }
+    .advance-options { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+    .advance-opt {
+      display: flex; align-items: center; gap: 8px;
+      background: #fff; border: 2px solid #ddd; border-radius: 8px;
+      padding: 8px 16px; cursor: pointer; font-weight: 600; transition: border 0.2s;
+    }
+    .advance-opt input[type="radio"] { accent-color: var(--yellow-dark); }
+    .advance-opt:has(input:checked) { border-color: var(--yellow-dark); background: var(--yellow-light); }
+ 
+    .form-submit-row { text-align: center; margin-top: 24px; }
+    .wa-note { font-size: 0.85rem; color: var(--gray); margin-top: 10px; }
+ 
+    /* ===== DRIVER REGISTRATION ===== */
+    #driver { background: var(--black); }
+    #driver h2.section-title { color: var(--yellow); }
+    #driver .section-sub { color: #aaa; }
+    .driver-card {
+      background: #2a2a2a; border-radius: var(--radius); padding: 40px;
+      max-width: 700px; margin: 0 auto; box-shadow: var(--shadow-lg);
+    }
+    #driver label { color: #ddd; }
+    #driver .form-control { background: #1a1a1a; border-color: #444; color: #eee; }
+    #driver .form-control:focus { border-color: var(--yellow); }
+    #driver .form-control::placeholder { color: #666; }
+    .file-upload-label {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px; border: 2px dashed #555; border-radius: 8px; padding: 20px;
+      cursor: pointer; color: #aaa; font-size: 0.9rem; text-align: center; transition: border 0.2s;
+    }
+    .file-upload-label:hover { border-color: var(--yellow); color: var(--yellow); }
+    .file-upload-label span { font-size: 2rem; }
+    input[type="file"] { display: none; }
+    .file-name-display { font-size: 0.82rem; color: #aaa; margin-top: 4px; }
+ 
+    /* ===== FEEDBACK ===== */
+    #feedback { background: var(--light-gray); }
+    .feedback-form-card {
+      background: var(--white); border-radius: var(--radius); padding: 36px;
+      max-width: 600px; margin: 0 auto 40px; box-shadow: var(--shadow);
+    }
+    .star-rating { display: flex; gap: 8px; justify-content: center; margin: 16px 0; flex-direction: row-reverse; }
+    .star-rating input { display: none; }
+    .star-rating label {
+      font-size: 2.2rem; cursor: pointer; color: #ddd; transition: color 0.15s;
+    }
+    .star-rating label:hover,
+    .star-rating label:hover ~ label,
+    .star-rating input:checked ~ label { color: var(--yellow); }
+    .feedback-name { width: 100%; margin-bottom: 12px; }
+    .feedback-text { width: 100%; margin-bottom: 16px; min-height: 80px; }
+    .feedbacks-list { max-width: 800px; margin: 0 auto; display: grid; gap: 16px; }
+    .feedback-card {
+      background: var(--white); border-radius: var(--radius); padding: 20px 24px;
+      box-shadow: var(--shadow); border-left: 4px solid var(--yellow);
+    }
+    .feedback-card .fc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .feedback-card .fc-name { font-weight: 700; color: var(--black); }
+    .feedback-card .fc-stars { color: var(--yellow); font-size: 1.1rem; }
+    .feedback-card .fc-text { color: var(--gray); font-size: 0.95rem; }
+    .feedback-card .fc-date { font-size: 0.78rem; color: #bbb; margin-top: 6px; }
+    .no-feedback { text-align: center; color: var(--gray); font-size: 1rem; padding: 30px; }
+ 
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--black); color: #ccc;
+      padding: 48px 20px 24px;
+    }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 40px; margin-bottom: 36px; }
+    @media(max-width:700px){ .footer-grid { grid-template-columns: 1fr; gap: 24px; } }
+    .footer-brand { display: flex; gap: 14px; align-items: flex-start; }
+    .footer-brand img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--yellow); }
+    .footer-brand-info h3 { color: var(--yellow); font-size: 1.3rem; font-weight: 900; }
+    .footer-brand-info p { font-size: 0.85rem; margin-top: 4px; line-height: 1.6; }
+    .footer-col h4 { color: var(--yellow); font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-col ul li { font-size: 0.9rem; }
+    .footer-col ul li a { color: #ccc; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: var(--yellow); }
+    .footer-contact-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.92rem; }
+    .footer-contact-item .icon { font-size: 1.3rem; }
+    .footer-wa-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--green); color: #fff; padding: 10px 22px;
+      border-radius: 50px; font-weight: 700; font-size: 0.95rem;
+      margin-top: 6px; transition: background 0.2s;
+    }
+    .footer-wa-btn:hover { background: var(--green-dark); }
+    .footer-bottom {
+      border-top: 1px solid #333; padding-top: 20px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    }
+    .footer-bottom p { font-size: 0.82rem; color: #777; }
+ 
+    /* ===== MISC ===== */
+    .divider { width: 60px; height: 4px; background: var(--yellow); margin: 0 auto 28px; border-radius: 2px; }
+    .scroll-top {
+      position: fixed; bottom: 28px; right: 28px;
+      background: var(--yellow); color: var(--black); border: none;
+      width: 46px; height: 46px; border-radius: 50%; font-size: 1.3rem; cursor: pointer;
+      box-shadow: var(--shadow); display: none; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .scroll-top:hover { background: var(--yellow-dark); }
+    .scroll-top.show { display: flex; }
+ 
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(30px);
+      background: var(--black); color: var(--yellow); padding: 12px 28px;
+      border-radius: 50px; font-weight: 700; font-size: 0.95rem; opacity: 0;
+      pointer-events: none; transition: all 0.35s; z-index: 9999; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+ 
+<!-- ===== NAVBAR ===== -->
+<nav>
+  <div class="nav-logo">
+    <img src="https://sc04.alicdn.com/kf/Se933512b0504434eb11e146a04d714c1N.jpg" alt="MR CAB Logo" />
+    <span class="nav-logo-text">MR.CAB</span>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <a href="#hero">Home</a>
+    <a href="#vehicles">Vehicles</a>
+    <a href="#booking">Book a Ride</a>
+    <a href="#driver">Join as Driver</a>
+    <a href="#feedback">Reviews</a>
+    <a href="https://wa.me/94702345556" target="_blank" class="nav-wa">📱 WhatsApp</a>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+ 
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-content container">
+    <div class="hero-left">
+      <div class="hero-logo">
+        <img src="https://sc04.alicdn.com/kf/Se933512b0504434eb11e146a04d714c1N.jpg" alt="MR CAB Logo" />
+        <div class="hero-logo-info">
+          <h1>MR.CAB</h1>
+          <p>Safe and Comfortable Ride</p>
+        </div>
+      </div>
+      <div class="hero-headline">
+        Book Any Vehicle with<span>Mr. CAB</span>
+      </div>
+      <p class="hero-desc">Your trusted ride partner across Sri Lanka. Cars, vans, and buses — available 24/7 at unbeatable rates. Confirm your hire instantly via WhatsApp!</p>
+      <div class="hero-btns">
+        <a href="#booking" class="btn btn-black">🚖 Book Now</a>
+        <a href="https://wa.me/94702345556" target="_blank" class="btn btn-wa">📱 WhatsApp Us</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-taxi-wrap">
+        <div class="hero-taxi-svg">🚖</div>
+        <div class="hero-badge">🌟 Trusted Since Day 1</div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<!-- ===== VEHICLE OPTIONS ===== -->
+<section id="vehicles">
+  <div class="container">
+    <h2 class="section-title">Our <span>Vehicle Fleet</span></h2>
+    <div class="divider"></div>
+    <p class="section-sub">All rates inclusive of driver · Prices in Sri Lankan Rupees (LKR)</p>
+    <div class="vehicles-grid">
+ 
+      <!-- CARS -->
+      <div class="vehicle-card">
+        <div class="vehicle-card-header">
+          <div class="icon">🚗</div>
+          <h3>Cars</h3>
+        </div>
+        <table class="vehicle-table">
+          <thead>
+            <tr><th>Vehicle</th><th>Seats</th><th>Per KM (LKR)</th><th>Night Charge</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>Alto</b></td><td>4</td><td>75</td><td class="night-badge">+500</td></tr>
+            <tr><td><b>Wagon R</b></td><td>4</td><td>80</td><td class="night-badge">+600</td></tr>
+            <tr><td><b>Prius</b></td><td>4</td><td>100</td><td class="night-badge">+800</td></tr>
+          </tbody>
+        </table>
+      </div>
+ 
+      <!-- VANS -->
+      <div class="vehicle-card">
+        <div class="vehicle-card-header">
+          <div class="icon">🚐</div>
+          <h3>Vans</h3>
+        </div>
+        <table class="vehicle-table">
+          <thead>
+            <tr><th>Vehicle</th><th>Seats</th><th>Per KM (LKR)</th><th>Night Charge</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>Mini Van</b></td><td>8</td><td>110</td><td class="night-badge">+900</td></tr>
+            <tr><td><b>Normal Van</b></td><td>10</td><td>110</td><td class="night-badge">+1,000</td></tr>
+            <tr><td><b>KDH</b></td><td>14</td><td>120</td><td class="night-badge">+1,200</td></tr>
+            <tr><td><b>Highroof</b></td><td>14</td><td>130</td><td class="night-badge">+1,400</td></tr>
+          </tbody>
+        </table>
+      </div>
+ 
+      <!-- BUSES -->
+      <div class="vehicle-card">
+        <div class="vehicle-card-header">
+          <div class="icon">🚌</div>
+          <h3>Buses</h3>
+        </div>
+        <table class="vehicle-table">
+          <thead>
+            <tr><th>Vehicle</th><th>Seats</th><th>Per KM (LKR)</th><th>Night Charge</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>16 Seater</b></td><td>16</td><td>180</td><td class="night-badge">+2,000</td></tr>
+            <tr><td><b>22 Seater</b></td><td>22</td><td>200</td><td class="night-badge">+2,500</td></tr>
+            <tr><td><b>49 Seater</b></td><td>49</td><td>210</td><td class="night-badge">+3,500</td></tr>
+            <tr><td><b>54 Seater</b></td><td>54</td><td>220</td><td class="night-badge">+4,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+ 
+    </div>
+  </div>
+</section>
+ 
+<!-- ===== BOOKING FORM ===== -->
+<section id="booking">
+  <div class="container">
+    <h2 class="section-title">Book Your <span>Ride</span></h2>
+    <div class="divider"></div>
+    <p class="section-sub">Fill in the details and confirm your hire directly via WhatsApp</p>
+ 
+    <div class="booking-card">
+      <form id="bookingForm">
+ 
+        <!-- Vehicle & Date/Time -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="vehicle">🚗 Vehicle Type</label>
+            <select id="vehicle" class="form-control" required>
+              <option value="">-- Select Vehicle --</option>
+              <optgroup label="🚗 Cars">
+                <option>Alto (4 seats – LKR 75/km)</option>
+                <option>Wagon R (4 seats – LKR 80/km)</option>
+                <option>Prius (4 seats – LKR 100/km)</option>
+              </optgroup>
+              <optgroup label="🚐 Vans">
+                <option>Mini Van (8 seats – LKR 110/km)</option>
+                <option>Normal Van (10 seats – LKR 110/km)</option>
+                <option>KDH (14 seats – LKR 120/km)</option>
+                <option>Highroof (14 seats – LKR 130/km)</option>
+              </optgroup>
+              <optgroup label="🚌 Buses">
+                <option>16 Seater (LKR 180/km)</option>
+                <option>22 Seater (LKR 200/km)</option>
+                <option>49 Seater (LKR 210/km)</option>
+                <option>54 Seater (LKR 220/km)</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="passengers">👥 No. of Passengers</label>
+            <input type="number" id="passengers" class="form-control" placeholder="e.g. 3" min="1" max="60"/>
+          </div>
+        </div>
+ 
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tripDate">📅 Starting Date</label>
+            <input type="date" id="tripDate" class="form-control" required/>
+          </div>
+          <div class="form-group">
+            <label for="tripTime">🕐 Starting Time</label>
+            <input type="time" id="tripTime" class="form-control" required/>
+          </div>
+        </div>
+ 
+        <!-- Locations -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="pickup">📍 Starting Point (Pickup)</label>
+            <input type="text" id="pickup" class="form-control" placeholder="Enter pickup location" required/>
+          </div>
+          <div class="form-group">
+            <label for="destination">🏁 End Point (Destination)</label>
+            <input type="text" id="destination" class="form-control" placeholder="Enter destination" required/>
+          </div>
+        </div>
+ 
+        <!-- Stops -->
+        <div class="form-group full" style="margin-bottom:18px;">
+          <label>🛑 Additional Stops</label>
+          <div class="stops-wrap" id="stopsWrap"></div>
+          <button type="button" class="btn-add-stop" onclick="addStop()">➕ Add Stop</button>
+        </div>
+ 
+        <!-- Advance Payment -->
+        <div class="advance-box">
+          <h4>💳 Advance Payment</h4>
+          <div class="advance-options">
+            <label class="advance-opt">
+              <input type="radio" name="advance" value="none" checked/> No advance
+            </label>
+            <label class="advance-opt">
+              <input type="radio" name="advance" value="10"/> 10% advance
+            </label>
+          </div>
+          <input type="text" class="form-control" id="advanceRemark" placeholder="Advance payment remark (optional)"/>
+        </div>
+ 
+        <!-- Remarks -->
+        <div class="form-group full" style="margin-bottom:18px;">
+          <label for="remarks">📝 Remarks / Additional Info</label>
+          <textarea id="remarks" class="form-control" placeholder="Any special requests, notes, or additional information..."></textarea>
+        </div>
+ 
+        <!-- Customer Name & Phone -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="custName">👤 Your Name</label>
+            <input type="text" id="custName" class="form-control" placeholder="Your full name" required/>
+          </div>
+          <div class="form-group">
+            <label for="custPhone">📞 Your Phone</label>
+            <input type="tel" id="custPhone" class="form-control" placeholder="07XXXXXXXX" required/>
+          </div>
+        </div>
+ 
+        <div class="form-submit-row">
+          <button type="submit" class="btn btn-wa" style="font-size:1.1rem; padding:16px 36px;">
+            📱 Confirm Hire on WhatsApp
+          </button>
+          <p class="wa-note">Your trip details will be sent directly to MR CAB via WhatsApp</p>
+        </div>
+ 
+      </form>
+    </div>
+  </div>
+</section>
+ 
+<!-- ===== DRIVER REGISTRATION ===== -->
+<section id="driver">
+  <div class="container">
+    <h2 class="section-title">Join as a <span>Driver</span></h2>
+    <div class="divider"></div>
+    <p class="section-sub">Register your vehicle with MR CAB and start earning today</p>
+ 
+    <div class="driver-card">
+      <form id="driverForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dName">👤 Full Name</label>
+            <input type="text" id="dName" class="form-control" placeholder="Your full name" required/>
+          </div>
+          <div class="form-group">
+            <label for="dPhone">📱 Phone / WhatsApp</label>
+            <input type="tel" id="dPhone" class="form-control" placeholder="07XXXXXXXX" required/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dLicence">🪪 Driving Licence No.</label>
+            <input type="text" id="dLicence" class="form-control" placeholder="Licence number" required/>
+          </div>
+          <div class="form-group">
+            <label for="dNIC">🆔 NIC Number</label>
+            <input type="text" id="dNIC" class="form-control" placeholder="NIC number" required/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dVehicleNo">🚗 Vehicle Number</label>
+            <input type="text" id="dVehicleNo" class="form-control" placeholder="e.g. ABC-1234" required/>
+          </div>
+          <div class="form-group">
+            <label for="dVehicleType">Vehicle Type</label>
+            <select id="dVehicleType" class="form-control">
+              <option value="">-- Select --</option>
+              <option>Alto</option><option>Wagon R</option><option>Prius</option>
+              <option>Mini Van</option><option>Normal Van</option><option>KDH</option><option>Highroof</option>
+              <option>16 Seater Bus</option><option>22 Seater Bus</option>
+              <option>49 Seater Bus</option><option>54 Seater Bus</option>
+            </select>
+          </div>
+        </div>
+ 
+        <!-- File Uploads -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>📸 Vehicle Photos</label>
+            <label class="file-upload-label" for="dVehiclePhotos">
+              <span>🖼️</span>
+              Click to upload vehicle photos
+            </label>
+            <input type="file" id="dVehiclePhotos" accept="image/*" multiple onchange="showFileName(this,'vehiclePhotoName')"/>
+            <div class="file-name-display" id="vehiclePhotoName"></div>
+          </div>
+          <div class="form-group">
+            <label>📄 Licence + Insurance</label>
+            <label class="file-upload-label" for="dDocs">
+              <span>📋</span>
+              Upload licence & insurance docs
+            </label>
+            <input type="file" id="dDocs" accept="image/*,.pdf" multiple onchange="showFileName(this,'docsName')"/>
+            <div class="file-name-display" id="docsName"></div>
+          </div>
+        </div>
+ 
+        <div class="form-submit-row">
+          <button type="submit" class="btn btn-wa" style="font-size:1.05rem; padding:15px 32px;">
+            📱 Submit Registration via WhatsApp
+          </button>
+          <p class="wa-note" style="color:#aaa;">Your registration details will be sent to MR CAB admin via WhatsApp</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+ 
+<!-- ===== CUSTOMER FEEDBACK ===== -->
+<section id="feedback">
+  <div class="container">
+    <h2 class="section-title">Customer <span>Reviews</span></h2>
+    <div class="divider"></div>
+    <p class="section-sub">Share your experience with MR CAB</p>
+ 
+    <div class="feedback-form-card">
+      <form id="feedbackForm">
+        <input type="text" id="fbName" class="form-control feedback-name" placeholder="Your name" required/>
+        <div class="star-rating" id="starRating">
+          <input type="radio" id="s5" name="stars" value="5"/><label for="s5" title="5 stars">★</label>
+          <input type="radio" id="s4" name="stars" value="4"/><label for="s4" title="4 stars">★</label>
+          <input type="radio" id="s3" name="stars" value="3"/><label for="s3" title="3 stars">★</label>
+          <input type="radio" id="s2" name="stars" value="2"/><label for="s2" title="2 stars">★</label>
+          <input type="radio" id="s1" name="stars" value="1"/><label for="s1" title="1 star">★</label>
+        </div>
+        <p style="text-align:center;font-size:0.85rem;color:#aaa;margin-bottom:14px;">Click stars to rate</p>
+        <textarea id="fbText" class="form-control feedback-text" placeholder="Write your review here..." required></textarea>
+        <div style="text-align:center;">
+          <button type="submit" class="btn btn-yellow">⭐ Submit Review</button>
+        </div>
+      </form>
+    </div>
+ 
+    <div class="feedbacks-list" id="feedbacksList">
+      <div class="no-feedback" id="noFeedback">No reviews yet. Be the first to share your experience!</div>
+    </div>
+  </div>
+</section>
+ 
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img src="https://sc04.alicdn.com/kf/Se933512b0504434eb11e146a04d714c1N.jpg" alt="MR CAB Logo"/>
+          <div class="footer-brand-info">
+            <h3>MR.CAB</h3>
+            <p>Safe and Comfortable Ride across Sri Lanka. Available 24/7 for all your travel needs.</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#vehicles">Vehicles & Rates</a></li>
+          <li><a href="#booking">Book a Ride</a></li>
+          <li><a href="#driver">Driver Registration</a></li>
+          <li><a href="#feedback">Reviews</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact Us</h4>
+        <div class="footer-contact-item"><span class="icon">📞</span> 0702345556</div>
+        <div class="footer-contact-item"><span class="icon">📱</span> WhatsApp: 0702345556</div>
+        <a href="https://wa.me/94702345556" target="_blank" class="footer-wa-btn">
+          💬 Chat on WhatsApp
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 MR CAB. All rights reserved. Safe & Comfortable Rides across Sri Lanka.</p>
+      <p>Designed with ❤️ for MR CAB</p>
+    </div>
+  </div>
+</footer>
+ 
+<!-- Scroll to Top -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+ 
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+ 
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+  // ---- Nav toggle ----
+  function toggleMenu() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+ 
+  // ---- Scroll top button ----
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('scrollTop');
+    btn.classList.toggle('show', window.scrollY > 400);
+  });
+ 
+  // ---- Toast ----
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+ 
+  // ---- Dynamic Stops ----
+  let stopCount = 0;
+  function addStop() {
+    stopCount++;
+    const wrap = document.getElementById('stopsWrap');
+    const div = document.createElement('div');
+    div.className = 'stop-item';
+    div.id = 'stop-' + stopCount;
+    div.innerHTML = `
+      <input type="text" class="form-control" placeholder="Stop ${stopCount} location" />
+      <button type="button" class="btn-remove-stop" onclick="removeStop('stop-${stopCount}')">✕</button>
+    `;
+    wrap.appendChild(div);
+  }
+  function removeStop(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  }
+ 
+  // ---- File upload display ----
+  function showFileName(input, displayId) {
+    const display = document.getElementById(displayId);
+    const files = Array.from(input.files).map(f => f.name).join(', ');
+    display.textContent = files || '';
+  }
+ 
+  // ---- Booking Form → WhatsApp ----
+  document.getElementById('bookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const vehicle    = document.getElementById('vehicle').value;
+    const passengers = document.getElementById('passengers').value;
+    const date       = document.getElementById('tripDate').value;
+    const time       = document.getElementById('tripTime').value;
+    const pickup     = document.getElementById('pickup').value;
+    const dest       = document.getElementById('destination').value;
+    const remarks    = document.getElementById('remarks').value;
+    const custName   = document.getElementById('custName').value;
+    const custPhone  = document.getElementById('custPhone').value;
+    const advance    = document.querySelector('input[name="advance"]:checked')?.value || 'none';
+    const advRemark  = document.getElementById('advanceRemark').value;
+ 
+    // Collect stops
+    const stops = [];
+    document.querySelectorAll('#stopsWrap .stop-item input').forEach((inp, i) => {
+      if (inp.value) stops.push(`Stop ${i+1}: ${inp.value}`);
+    });
+ 
+    let msg = `🚖 *MR CAB - TRIP BOOKING REQUEST*\n\n`;
+    msg += `👤 *Customer:* ${custName}\n`;
+    msg += `📞 *Phone:* ${custPhone}\n\n`;
+    msg += `🚗 *Vehicle:* ${vehicle}\n`;
+    msg += `👥 *Passengers:* ${passengers || 'N/A'}\n`;
+    msg += `📅 *Date:* ${date}\n`;
+    msg += `🕐 *Time:* ${time}\n\n`;
+    msg += `📍 *Pickup:* ${pickup}\n`;
+    msg += `🏁 *Destination:* ${dest}\n`;
+    if (stops.length) msg += stops.map(s => `🛑 ${s}`).join('\n') + '\n';
+    msg += `\n💳 *Advance:* ${advance === '10' ? '10% advance requested' : 'No advance'}\n`;
+    if (advRemark) msg += `   Advance Remark: ${advRemark}\n`;
+    if (remarks) msg += `\n📝 *Remarks:* ${remarks}\n`;
+    msg += `\n_Sent from MR CAB Website_`;
+ 
+    const url = `https://wa.me/94702345556?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  });
+ 
+  // ---- Driver Registration → WhatsApp ----
+  document.getElementById('driverForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name       = document.getElementById('dName').value;
+    const phone      = document.getElementById('dPhone').value;
+    const licence    = document.getElementById('dLicence').value;
+    const nic        = document.getElementById('dNIC').value;
+    const vehicleNo  = document.getElementById('dVehicleNo').value;
+    const vehicleType= document.getElementById('dVehicleType').value;
+ 
+    let msg = `🚖 *MR CAB - DRIVER REGISTRATION*\n\n`;
+    msg += `👤 *Name:* ${name}\n`;
+    msg += `📱 *Phone/WhatsApp:* ${phone}\n`;
+    msg += `🪪 *Driving Licence:* ${licence}\n`;
+    msg += `🆔 *NIC:* ${nic}\n`;
+    msg += `🚗 *Vehicle Number:* ${vehicleNo}\n`;
+    msg += `🚌 *Vehicle Type:* ${vehicleType || 'N/A'}\n\n`;
+    msg += `📸 *(Vehicle photos & documents will be shared separately)*\n\n`;
+    msg += `_Sent from MR CAB Driver Registration Form_`;
+ 
+    const url = `https://wa.me/94702345556?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  });
+ 
+  // ---- Feedback / Star Rating ----
+  const LS_KEY = 'mrcab_feedbacks';
+ 
+  function loadFeedbacks() {
+    return JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+  }
+ 
+  function saveFeedback(fb) {
+    const list = loadFeedbacks();
+    list.unshift(fb);
+    localStorage.setItem(LS_KEY, JSON.stringify(list));
+  }
+ 
+  function renderFeedbacks() {
+    const list = loadFeedbacks();
+    const container = document.getElementById('feedbacksList');
+    const noFb = document.getElementById('noFeedback');
+    if (list.length === 0) {
+      noFb.style.display = 'block';
+      return;
+    }
+    noFb.style.display = 'none';
+ 
+    // Remove existing cards
+    container.querySelectorAll('.feedback-card').forEach(el => el.remove());
+ 
+    list.forEach(fb => {
+      const card = document.createElement('div');
+      card.className = 'feedback-card';
+      const stars = '★'.repeat(fb.stars) + '☆'.repeat(5 - fb.stars);
+      card.innerHTML = `
+        <div class="fc-top">
+          <span class="fc-name">👤 ${fb.name}</span>
+          <span class="fc-stars">${stars}</span>
+        </div>
+        <div class="fc-text">${fb.text}</div>
+        <div class="fc-date">${fb.date}</div>
+      `;
+      container.appendChild(card);
+    });
+  }
+ 
+  document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name  = document.getElementById('fbName').value.trim();
+    const text  = document.getElementById('fbText').value.trim();
+    const starEl= document.querySelector('input[name="stars"]:checked');
+    if (!starEl) { showToast('⭐ Please select a star rating!'); return; }
+    const stars = parseInt(starEl.value);
+    const date  = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+ 
+    saveFeedback({ name, text, stars, date });
+    renderFeedbacks();
+    this.reset();
+    showToast('✅ Thank you for your review!');
+  });
+ 
+  // Init feedbacks on load
+  renderFeedbacks();
+ 
+  // Highlight active nav on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navAs = document.querySelectorAll('.nav-links a[href^="#"]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navAs.forEach(a => {
+      a.style.borderBottomColor = a.getAttribute('href') === '#' + current ? 'var(--black)' : 'transparent';
+    });
+  });
+</script>
+</body>
+</html>
+ 
+... (1 more lines. Total: 871 lines. Use offset=871 to continue.)
